@@ -1,34 +1,19 @@
-ENEMY_MAP_DATA_MAPS = {"placename_name": {}, "zone_name": {}}
-ITEM_ATTRIBUTES_PARAMS = {"name": {}, "value": {}, "value_hq": {}}
 LEVE_ITEMS = {"name": {}, "id": {}}
-PLACENAME_ENEMIES = {"name": {}, positions: recursive(PLACENAME_ENEMIES_POSITIONS)}
-PLACENAME_ENEMIES_POSITIONS = {"hp": {}, "level": {}, "x": {}, "y": {}}
-PLACENAME_INSTANCES = {"name": {}, "level": {}, "content_type": {}, "help": {}}
-PLACENAME_NPCS = {"name": {}, "position": {"x": {}, "y": {}}}
 QUEST_TEXT = {"text": {}}
-TITLE_ACHIEVEMENTS = {"name": {}}
-EXPTABLE = {"exp": {}}
-
 QUESTS = {"name": {}, "genre_name": {}, "npc_name": {}, "patch": {"name": {}, "number": {}}}
 ITEM_CLASSES = {} # TODO: Add all item classes.
-
-def recursive(args):
-    d = {}
-    for i in range(256): # this constant could be wrong?
-        d[i] = args
-    return d
 
 def items(args):
     d = {}
     for cls in ITEM_CLASSES:
         sd = {}
         for subcls in cls:
-            sd[subcls] = recursive(args)
+            sd[subcls] = args
         d[cls] = sd
     return d
 
 table = {
-        # TODO: Gathering, crafting
+    # TODO: Gathering, crafting
 	"achievement": {
 		"url": "https://api.xivdb.com/achievement",
 		"keys": {
@@ -36,7 +21,7 @@ table = {
                         'name_de': {},
                         'name_fr': {},
                         'name_ja': {},
-			'patch': {'name': {}, 'number': {}},
+			'patch': {'number': {}},
 			'kind_name': {},
                         'type_name': {},
                         'category_name': {},
@@ -63,7 +48,7 @@ table = {
                 'recast_time': {},
                 'is_trait': {},
                 'type_name': {},
-                'patch': {'name': {}, 'number': {}},
+                'patch': {'number': {}},
             },
         },
         "emote": {
@@ -74,7 +59,7 @@ table = {
                 'name_fr': {},
                 'name_de': {},
                 'text_command': {'command_1': {}, 'command_2': {}, 'command_3': {}, 'command_4': {}},
-                'patch': {'name': {}, 'number': {}},
+                'patch': {'number': {}},
             },
         },
         "enemy": {
@@ -85,10 +70,10 @@ table = {
                 'name_fr': {},
                 'name_de': {},
                 'map_data': {
-                    'maps': recursive(ENEMY_MAP_DATA_MAPS),
+                    'maps': {"placename_name": {}, "zone_name": {}},
                     'stats': {'hpAvg': {}, 'hpMax': {}, 'hpMin': {}, 'levelMax': {}, 'levelMin': {}, 'mpAvg': {}, 'mpMax': {}, 'mpMin': {}},
                 },
-                'patch': {'name': {}, 'number': {}},
+                'patch': {'number': {}},
             },
         },
         "fate": {
@@ -102,7 +87,7 @@ table = {
                 'class_level': {},
                 'class_level_max': {},
                 'map': {'placename': {'name': {}}},
-                'patch': {'name': {}, 'number': {}},
+                'patch': {'number': {}},
             },
         },
         "instance": {
@@ -122,7 +107,7 @@ table = {
                 'item_level': {},
                 'item_level_sync': {},
                 'content_name': {},
-                'patch': {'name': {}, 'number': {}},
+                'patch': {'number': {}},
             },
         },
         "item": {
@@ -140,8 +125,8 @@ table = {
                 'attributes_base': {'auto_attack': {}, 'auto_attack_hq': {}, 'block_rate': {}, 'block_rate_hq': {}, 'block_strength': {}, 'block_strength_hq': {},
                     'damage': {}, 'damage_hq': {}, 'defense': {}, 'defense_hq': {}, 'delay': {}, 'delay_hq': {}, 'magic_damage': {}, 'magic_damage_hq': {},
                     'magic_defense': {}, 'magic_defense_hq': {}},
-                'attributes_params': recursive(ITEM_ATTRIBUTES_PARAMS),
-                'patch': {'name': {}, 'number': {}},
+                'attributes_params': {"name": {}, "value": {}, "value_hq": {}},
+                'patch': {'number': {}},
             },
         },
         "leve": {
@@ -159,7 +144,7 @@ table = {
                 'classjob_category': {},
                 'time_limit': {},
                 'placename': {'name': {}},
-                'patch': {'name': {}, 'number': {}},
+                'patch': {'number': {}},
                 #'items': items(LEVE_ITEMS),
                 #TODO: This
             },
@@ -182,11 +167,11 @@ table = {
                 'defense': {},
                 'skill_cost': {},
                 'speed': {},
-                'patch': {'name': {}, 'number': {}},
+                'patch': {'number': {}},
             },
         },
         "npc": {
-            "norepeat": True, #TODO: This
+            "norepeat": True,
             "url": "https://api.xivdb.com/npc",
             "keys": {
                 'name': {},
@@ -197,7 +182,7 @@ table = {
                 'title_de': {},
                 'title_fr': {},
                 'title_jp': {},
-                'patch': {'name': {}, 'number': {}},
+                'patch': {'number': {}},
             },
         },
         "placename": {
@@ -207,11 +192,11 @@ table = {
                 'name_de': {},
                 'name_jp': {},
                 'name_fr': {},
-                'enemies': recursive(PLACENAME_ENEMIES),
-                'instances': recursive(PLACENAME_INSTANCES),
-                'npcs': recursive(PLACENAME_NPCS),
-                'quests': recursive(QUESTS),
-                'patch': {'name': {}, 'number': {}},
+                'enemies': {"name": {}, "positions": {"hp": {}, "level": {}, "x": {}, "y": {}}},
+                'instances': {"name": {}, "level": {}, "content_type": {}, "help": {}},
+                'npcs': {"name": {}, "position": {"x": {}, "y": {}}},
+                'quests': QUESTS,
+                'patch': {'number': {}},
             },
         },
         "quest": {
@@ -227,10 +212,10 @@ table = {
                 'name_de': {},
                 'npc_start': {'name': {}},
                 'npc_end': {'name': {}},
-                'patch': {'name': {}, 'number': {}},
-                'pre_quests': recursive(QUESTS),
-                'post_quests': recursive(QUESTS),
-                'text': {'journal': recursive(QUEST_TEXT), 'todo': recursive(QUEST_TEXT)},
+                'patch': {'number': {}},
+                'pre_quests': QUESTS,
+                'post_quests': QUESTS,
+                'text': {'journal': QUEST_TEXT, 'todo': QUEST_TEXT},
             },
         },
         "status": {
@@ -241,7 +226,7 @@ table = {
                 'name_jp': {},
                 'name_fr': {},
                 'help': {},
-                'patch': {'name': {}, 'number': {}},
+                'patch': {'number': {}},
             },
         },
         "title": {
@@ -255,8 +240,8 @@ table = {
                 'name_female_de': {},
                 'name_female_jp': {},
                 'name_female_fr': {},
-                'achivements': recursive(TITLE_ACHIEVEMENTS),
-                'patch': {'name': {}, 'number': {}},
+                'achivements': {"name": {}},
+                'patch': {'number': {}},
             },
         },
         "weather": {
@@ -268,11 +253,6 @@ table = {
                 'name_fr': {},
             },
         },
-        "exptable": {
-            "url": "https://api.xivdb.com/data/exp_table",
-            "keys": recursive(EXPTABLE),
-        },
-
 }
 
 def databases():

@@ -2,18 +2,25 @@
 
 import urllib.request, json, databases 
 xivdb = databases.databases()
-DEBUG = True
+DEBUG = False
 
 def decode(url):
     with urllib.request.urlopen(url) as data:
         return json.loads(data.read().decode())
 
-def recover_ids(url):
+def recover_ids(url, norepeat):
     print("\tRecovering IDs...")
     ids = []
+    names = []
     for unit in decode(url):
-        ids.append(unit['id'])
+        if not norepeat or not 'name' in unit or not unit['name'] in names:
+            ids.append(unit['id'])
+        elif norepeat:
+            print("\t\tTEST MESSAGE: Norepeating " + unit['name'])
     return ids
+
+def clean(s):
+    return s.replace("[","").replace("]","")
 
 def tostr(v, keys):
     if isinstance(v, bool):
@@ -24,14 +31,23 @@ def tostr(v, keys):
         return str(v)
     elif isinstance(v, dict):
         return read_table(v, keys)
+    elif isinstance(v, list):
+        return read_array(v, keys)
     elif isinstance(v, str):
-        return "[[" + v + "]]"
+        return "[[" + clean(v) + "]]"
     elif v is None or v == []:
         return None
     else:
-        print("don't know what to do with")
-        print(str(v))
+        print("\t\tdon't know what to do with " + str(type(v)) + ":")
+        print("\t\t\t" + str(v))
         return None
+
+def read_array(v, keys):
+    lua = "{"
+    for entry in v:
+        lua += read_table(entry, keys) + ","
+    lua += "},"
+    return lua
 
 def read_table(v, keys):
     lua = "{"
@@ -43,14 +59,14 @@ def read_table(v, keys):
     lua += "}"
     return lua
 
-def parse_run(url, keys):
+def parse_run(url, keys, norepeat):
     lua = "return {data={"
     index = ""
-    ids = recover_ids(url)
+    ids = recover_ids(url, norepeat)
     print("\tDecoding data...")
-    debug_halt = False
+    debug_halt_counter = 0
     for uid in ids:
-        if DEBUG and debug_halt:
+        if DEBUG and debug_halt_counter > 10:
             break
         if uid % 100 == 0:
             print("\t\tCurrently running UID " + str(uid))
@@ -59,16 +75,23 @@ def parse_run(url, keys):
         v = decode(url + "/" + uid)
         if 'is_in_game' in v and v['is_in_game'] == 0:
             continue
-        debug_halt = True
+        debug_halt_counter += 1
         
-        index += "['" + v['name'] + "']="+uid+","
+        index += "[\"" + v['name'] + "\"]="+uid+","
         lua += "[" + uid + "]=" + read_table(v, keys) + ","
     lua += "},index={" + index + "}}"
     return lua
 
+def clean_lua(lua):
+    return lua.replace(",,",",").replace("{,","{")
+
 for db in xivdb:
     print("Running parser on database " + db + ":")
-    s = parse_run(xivdb[db]['url'], xivdb[db]['keys'])
+    norepeat = False
+    if 'norepeat' in xivdb[db] and xivdb[db]['norepeat']:
+        norepeat = True
+    s = parse_run(xivdb[db]['url'], xivdb[db]['keys'], norepeat)
+    s = clean_lua(s)
     if len(s) > 2097150:
         print('\tPossibility of MediaWiki file overflow error.')
     print("\tPrinting to file...")
